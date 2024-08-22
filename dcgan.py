@@ -57,3 +57,6 @@ transform = transform.Compose([transform.Resize(imageSize), transform.ToTensor()
 dataset = dset.CIFAR10(root='./data', download=True, transform=transform)
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=batchSize, shuffle=True, num_workers=2)
 
+# Creating the generator
+netG = G()
+netG.apply(weights_init)
