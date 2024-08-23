@@ -84,3 +84,7 @@ dataloader = torch.utils.data.DataLoader(dataset, batch_size=batchSize, shuffle=
 # Creating the generator
 netG = G()
 netG.apply(weights_init)
+
+# Creating the discriminator
+netD = D()
+netD.apply(weights_init)
