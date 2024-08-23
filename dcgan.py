@@ -112,3 +112,8 @@ for epoch in range(25):
         target = Variable(torch.zeros(input.size()[0]))
         output = netD(fake.detach())
         errG_fake = criterion(output, target)
+
+        # Back propagating the total error
+        errD = errD_real + errG_fake
+        errD.backward()
+        optimizerD.step()
