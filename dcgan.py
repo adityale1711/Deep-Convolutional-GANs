@@ -56,6 +56,10 @@ class D(nn.Module):
             nn.Sigmoid()
         )
 
+    def forward(self, input):
+        output = self.main(input)
+        return output.view(-1)
+
 # Defining the weights_init function that takes as input a neural network m and that will initialize all its weights
 def weights_init(m):
     classname = m.__class__.__name__
