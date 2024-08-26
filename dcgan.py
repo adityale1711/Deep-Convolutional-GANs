@@ -7,7 +7,7 @@ import torch.nn.parallel
 import torch.optim as optim
 import torchvision.utils as vutils
 import torchvision.datasets as dset
-import torchvision.transforms as transform
+import torchvision.transforms as transforms
 
 from torch.autograd import Variable
 from multiprocessing import freeze_support
@@ -73,16 +73,10 @@ def weights_init(m):
         m.weight.data.normal_(1.0, 0.02)
         m.bias.data.fill_(0)
 
-if __name__ == '__main__':
-    freeze_support()
-
-    # Setting some hyperparameters
-    batchSize = 64
-    imageSize = 64
-
+def trainGANs(imageSize, batchSize, epochs):
     # Creating the transformations
-    transform = transform.Compose([transform.Resize(imageSize), transform.ToTensor(),
-                                   transform.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)), ])
+    transform = transforms.Compose([transforms.Resize(imageSize), transforms.ToTensor(),
+                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)), ])
 
     # Loading the dataset
     dataset = dset.CIFAR10(root='./data', download=True, transform=transform)
@@ -101,7 +95,7 @@ if __name__ == '__main__':
     optimizerD = optim.Adam(netD.parameters(), lr=0.0002, betas=(0.5, 0.999))
     optimizerG = optim.Adam(netG.parameters(), lr=0.0002, betas=(0.5, 0.999))
 
-    for epoch in range(25):
+    for epoch in range(epochs):
         for i, data in enumerate(dataloader, 0):
             # Updating the weights of the neural network of the discriminator
             netD.zero_grad()
@@ -134,8 +128,12 @@ if __name__ == '__main__':
             optimizerG.step()
 
             # Print the losses and saving the real images and the generated images
-            print('[%d/%d][%d/%d] Loss_D: %.4f, LossG: %.4f' % (epoch, 25, i, len(dataloader), errD.item(), errG.item()))
+            print(f'[{epoch}/{epochs}][{i}/{len(dataloader)}] Loss_D: {errD.item():.4f}, Loss_G: {errG.item():.4f}')
             if i % 100 == 0:
-                vutils.save_image(real, '%s/real_samples.png' % "./results", normalize=True)
+                vutils.save_image(real, f'./results/real_samples_epochs_{epoch}.png', normalize=True)
                 fake = netG(noise)
-                vutils.save_image(fake.data, '%s/fake_samples_epochs_%03d.png' % ("./results", epoch), normalize=True)
+                vutils.save_image(fake.data, f'./results/fake_samples_epochs_{epoch}.png', normalize=True)
+
+if __name__ == '__main__':
+    freeze_support()
+    trainGANs(imageSize=64, batchSize=64, epochs=25)
